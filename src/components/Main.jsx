@@ -1,60 +1,47 @@
-import React from 'react'
-import Recepe from '../components/Recepe.jsx'
+import React, { useState } from 'react';
+import Recepe from '../components/Recepe.jsx';
 import IngredientsList from './IngredientsList';
+import { getRecipeFromMistral } from "../ai.js";
+import '../styles/Main.css';
 
-import '../styles/Main.css'
 export default function Main() {
-
-    const [ingredients , setIngredients]  =React.useState([]);
-
-    
-
-   const [recipe ,setRecipe] = React.useState("");
+  const [ingredients, setIngredients] = useState([]);
+  const [recipe, setRecipe] = useState("");
 
   async function getRecipe() {
-   try {
-            const res = await fetch("http://localhost:3001/recipe", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ ingredients })
-            });
-            if (!res.ok) throw new Error(`Server responded ${res.status}`);
-            const data = await res.json();
-            setRecipe(data.recipe || "");
-        } catch (err) {
-            console.error("getRecipe error:", err);
-            // show UI-friendly message if needed
-        }
-}
+    const recipeMarkdown = await getRecipeFromMistral(ingredients);
+    setRecipe(recipeMarkdown);
+  }
 
-   
-   function addIngredient(formData){
-    const newIngredient = formData.get("ingredient")
-    if(newIngredient != ''){
-    setIngredients((prevIngredient)=>[...prevIngredient , newIngredient])
-      console.log(newIngredient);
-    }else{
-        window.alert('please add an ingredient')
+  function addIngredient(e) {
+    e.preventDefault(); // prevent page reload
+    const formData = new FormData(e.target);
+    const newIngredient = formData.get("ingredient");
+    if (newIngredient !== '') {
+      setIngredients(prev => [...prev, newIngredient]);
+      e.target.reset(); // clear input
+    } else {
+      window.alert('Please add an ingredient');
     }
-   }
-
-
+  }
 
   return (
-      <main> 
-        <form  className='main' action={addIngredient}>
-            <input name='ingredient' type="text" aria-label='ingredient' placeholder='e.g. onions' />
-            <button className='btn' onClick={addIngredient} name='ingredient'>Add ingredient</button>
-        </form>
-        <IngredientsList
-         ingredients={ingredients}
-         getRecipe={getRecipe}
-         />
-        < Recepe  
-        recipe={recipe}
+    <main>
+      <form className='main' onSubmit={addIngredient}>
+        <input
+          name='ingredient'
+          type="text"
+          aria-label='ingredient'
+          placeholder='e.g. onions'
         />
+        <button className='btn' type="submit">Add ingredient</button>
+      </form>
+
+      <IngredientsList ingredients={ingredients} getRecipe={getRecipe} />
 
       
-      </main>   
-  )
+
+      <Recepe getRecipe={getRecipe} />
+    </main>
+  );
 }

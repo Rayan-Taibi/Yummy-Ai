@@ -16,8 +16,10 @@ export default function IngredientsList(props) {
             <h3>Ready for Recipe : </h3>
             <p>Generate a recepe from your list of ingreidents</p>
           </div>
-          <button className='get-recepe-button' onClick={props.getRecipe}>Get a recepe</button>
-        </div>}
+          <button className='get-recepe-button' onClick={() => {
+           console.log("Button clicked!");
+           props.getRecipe();
+  }}>Get a recepe</button> </div>}
     </>
   )
 }
