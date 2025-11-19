@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Recepe from '../components/Recepe.jsx';
 import IngredientsList from './IngredientsList';
-import { getRecipeFromMistral } from "../ai.js";
+import { getRecipeFromMistral } from "../ai";
 import '../styles/Main.css';
 
 export default function Main() {
@@ -37,11 +37,11 @@ export default function Main() {
         <button className='btn' type="submit">Add ingredient</button>
       </form>
 
-      <IngredientsList ingredients={ingredients} getRecipe={getRecipe} />
-
+{  ingredients.length >0 && <IngredientsList ingredients={ingredients} getRecipe={getRecipe} />
+}
       
 
-      <Recepe getRecipe={getRecipe} />
+     {recipe && <Recepe recipe={recipe} />}
     </main>
   );
 }
